@@ -1336,7 +1336,7 @@
                         $('#biaya_utuh').val('')
                     }
                 })
-            })
+            }) 
             
             $(document).on('keyup focus', '#biaya_utuh', function(e){
                     var num = autoFormatPhoneNumber(e.target.value);
