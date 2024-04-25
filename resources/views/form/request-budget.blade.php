@@ -1,9 +1,5 @@
 @include('master_layout/header')
 
-<script>
-    swal("Good job!", "You clicked the button!", "success");
-</script>
-
 <!-- Page Sidebar Ends-->
 <div class="page-body">
     <div class="container-fluid">

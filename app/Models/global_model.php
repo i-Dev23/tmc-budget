@@ -348,6 +348,7 @@ class global_model extends Model
 	}
 
 	public static function UpdateData($params, $menu){
+		// dd($params, $menu);
 		if($menu == "user_update"){
 			$query = DB::table('master_user')->where('id','=',$params['id'])->update($params['data']);
 		}else if($menu == "divisi_update"){
@@ -758,7 +759,8 @@ class global_model extends Model
 		}
 	}
 
-	public function UpdateDataDivisi($params){
+	public static function UpdateDataDivisi($params){
+		// dd($params);
 		return DB::update("UPDATE master_divisi set nama_divisi = '$id_budget', amount = '$amount', updated_date = '".now()."' where id = '$id'");
 	}
 

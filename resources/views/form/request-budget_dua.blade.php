@@ -1,9 +1,5 @@
 @include('master_layout/header')
 
-<script>
-    swal("Good job!", "You clicked the button!", "success");
-</script>
-
 <!-- Page Sidebar Ends-->
 <div class="page-body">
     <div class="container-fluid">
@@ -59,7 +55,7 @@
                             @else
                                 <h1>Saldo <span id="saldo_page">{{ number_format($get_saldo[0]->amount) }}</span></h1>
                             @endif
-                            <input type="hidden" id="saldo_page_hidden" value="{{ ($get_saldo[0]->amount) }}">
+                            <input type="text" id="saldo_page_hidden" value="{{ ($get_saldo[0]->amount) }}">
                         </div>
                         
                     @endif

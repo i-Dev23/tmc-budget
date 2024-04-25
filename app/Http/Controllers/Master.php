@@ -67,6 +67,7 @@ class Master extends Controller
         \Log::info($request->all());
         $menu = $request->dataMenu;
         \Log::info($menu);
+        // dd($menu);
         switch($menu){
             case 'user':
                 $originPass = explode('@', $request->email);
@@ -135,7 +136,7 @@ class Master extends Controller
                 ];
                 $params = [
                     'id'        => $id,
-                    'parms_int' => $division
+                    'parms_int' => $parms_int
                 ];
 
                 $get_id = global_model::selectId($division);
@@ -151,8 +152,9 @@ class Master extends Controller
                         'id_divisi'       => $get_id[0]->id_divisi,
                     ];
                 }
+                // dd($params_sub_divisi);
 
-                $insDataUpdate = global_model::UpdateDataDivisi($params);
+                // $insDataUpdate = global_model::UpdateDataDivisi($params);
 
             break;
 
@@ -659,6 +661,7 @@ class Master extends Controller
     public function getDetailBudget($id){
         $stsActive = 'Active';
         $dataUser = global_model::getDetailBudget($id,$stsActive);
+        // dd($dataUser);
         return $dataUser;
     }
 

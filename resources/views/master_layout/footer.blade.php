@@ -692,7 +692,8 @@
                                         if(row.budget == "" || row.budget == null){
                                             row.budget = 0;
                                         }
-                                        var bugdet_all_fixed = parseInt(budget_int) + parseInt(row.budget);
+                                        // var bugdet_all_fixed = parseInt(budget_int) + parseInt(row.budget);
+                                        var bugdet_all_fixed = parseInt(budget_int);
                                         console.log(bugdet_all_fixed)
                                         return `<span class="badge badge-primary">`+parseInt(bugdet_all_fixed).toLocaleString('en-us')+`&nbsp;&nbsp;<i class="fa fa-eye"></i></span>`
                                         // return budget_int;
@@ -1245,6 +1246,8 @@
                     $('#nilai_biaya').val('')
                     return false
                 }
+                console.log(data_request)
+                return false
                 $('#nilai_biaya').val(autoFormatPhoneNumber(number_typing))
                 var hasil_dari_budget = data_request - number_typing;
                 if(isNaN(hasil_dari_budget)){
@@ -1270,71 +1273,107 @@
                 }
             })
 
-          var data_temp_request_page = 0;
-          $(document).on('change', '#select_budget', function(){
-            SlickLoader.enable();
-            $('#id_sb_breakdown').val(this.value)
+            var data_temp_request_page = 0;
+            $(document).on('change', '#select_budget', function(){
+                SlickLoader.enable();
+                $('#id_sb_breakdown').val(this.value)
                 $('#dinamic_view').empty()
                 $.ajax({
-                url:"{{url('check_sub_breakdown')}}/"+this.value,
-                type:"GET",
-                success:function(data){
-                    console.log(data[0].amount)
-                    var budget = 0;
-                    if (data[0].amount == null) {
-                        budget = 0;
-                    }else{
-                        budget = parseInt(data[0].amount)
+                    url:"{{url('check_sub_breakdown')}}/"+this.value,
+                    type:"GET",
+                    success:function(data){
+                        console.log(data[0].amount)
+                        var budget = 0;
+                        if (data[0].amount == null) {
+                            budget = 0;
+                        }else{
+                            budget = parseInt(data[0].amount)
+                        }
+                        console.log(budget)
+                        $('#dinamic_view').append(`<h1>Saldo <span id="saldo_page_page">`+budget.toLocaleString('en-us')+`</span></h1>
+                                            <input type="hidden" id="saldo_page_page_hidden" value="`+budget+`">`)
+                        setTimeout(() => {
+                            data_temp_request_page = $('#saldo_page_page_hidden').val();
+                        }, 1000);
+                        },complete: function (data) {
+                        SlickLoader.disable(); 
                     }
-                    console.log(budget)
-                    $('#dinamic_view').append(`<h1>Saldo <span id="saldo_page_page">`+budget.toLocaleString('en-us')+`</span></h1>
-                                        <input type="hidden" id="saldo_page_page_hidden" value="`+budget+`">`)
-                    setTimeout(() => {
-                        data_temp_request_page = $('#saldo_page_page_hidden').val();
-                    }, 1000);
-                    },complete: function (data) {
-                    SlickLoader.disable(); 
-                }
                 });
-        })
-            $(document).on('keyup focus', '#biaya_utuh', function(e){
-                var num = autoFormatPhoneNumber(e.target.value);
-                var data_request_page = parseInt(data_temp_request_page);
-                console.log(data_request_page)
-                var number_typing_page = parseInt($('#biaya_utuh').val().replace(/\D/g, ""));
-                if($('#biaya_utuh').val() == '-' || $('#biaya_utuh').val() == '+' || $('#biaya_utuh').val() == '.'){
-                    $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
-                    $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
-                    $('#biaya_utuh').val('')
-                    return false
-                }
-                $('#biaya_utuh').val(num)
-                // $('#biaya_utuh').val(number_typing_page.toLocaleString('en-us'))
-                var hasil_dari_budget_page = data_request_page - number_typing_page;
-                if(isNaN(hasil_dari_budget_page)){
-                    $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
-                    $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
-                    $('#biaya_utuh').val('')
-                    return false
-                }else{
-                    $('#saldo_page_page').text(hasil_dari_budget_page.toLocaleString('en-us'))
-                    $('#saldo_page_page_hidden').val(hasil_dari_budget_page.toLocaleString('en-us'))
-                }
-                if(hasil_dari_budget_page < 0 ){
-                    Swal.fire({
-                    icon: 'error',
-                    title: 'error',
-                    text : 'budget yang ada input melebihi budget yang tersedia',
-                    showConfirmButton: false,
-                    timer: 1500
-                    });
-                    $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
-                    $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
-                    $('#biaya_utuh').val('')
-                }
+                
+                $(document).on('keyup focus', '#biaya_utuh', function(e){
+                    var num = autoFormatPhoneNumber(e.target.value);
+                    var data_request_page = parseInt(data_temp_request_page);
+                    console.log(data_request_page, 'dikene');
+                    var number_typing_page = parseInt($('#biaya_utuh').val().replace(/\D/g, ""));
+                    if($('#biaya_utuh').val() == '-' || $('#biaya_utuh').val() == '+' || $('#biaya_utuh').val() == '.'){
+                        $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
+                        $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
+                        $('#biaya_utuh').val('')
+                        return false
+                    }
+                    $('#biaya_utuh').val(num);
+                    // $('#biaya_utuh').val(number_typing_page.toLocaleString('en-us'))
+                    var hasil_dari_budget_page = data_request_page - number_typing_page;
+                    if(isNaN(hasil_dari_budget_page)){
+                        $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
+                        $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
+                        $('#biaya_utuh').val('')
+                        return false
+                    }else{
+                        $('#saldo_page_page').text(hasil_dari_budget_page.toLocaleString('en-us'))
+                        $('#saldo_page_page_hidden').val(hasil_dari_budget_page.toLocaleString('en-us'))
+                    }
+                    if(hasil_dari_budget_page < 0 ){
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'error',
+                        text : 'budget yang ada input melebihi budget yang tersedia',
+                        showConfirmButton: false,
+                        timer: 1500
+                        });
+                        $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
+                        $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
+                        $('#biaya_utuh').val('')
+                    }
+                })
             })
-
-      
+            
+            $(document).on('keyup focus', '#biaya_utuh', function(e){
+                    var num = autoFormatPhoneNumber(e.target.value);
+                    var data_request_page = parseInt(data_temp_request_page);
+                    console.log(data_request_page, 'dikene');
+                    var number_typing_page = parseInt($('#biaya_utuh').val().replace(/\D/g, ""));
+                    if($('#biaya_utuh').val() == '-' || $('#biaya_utuh').val() == '+' || $('#biaya_utuh').val() == '.'){
+                        $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
+                        $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
+                        $('#biaya_utuh').val('')
+                        return false
+                    }
+                    $('#biaya_utuh').val(num);
+                    // $('#biaya_utuh').val(number_typing_page.toLocaleString('en-us'))
+                    var hasil_dari_budget_page = data_request_page - number_typing_page;
+                    if(isNaN(hasil_dari_budget_page)){
+                        $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
+                        $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
+                        $('#biaya_utuh').val('')
+                        return false
+                    }else{
+                        $('#saldo_page_page').text(hasil_dari_budget_page.toLocaleString('en-us'))
+                        $('#saldo_page_page_hidden').val(hasil_dari_budget_page.toLocaleString('en-us'))
+                    }
+                    if(hasil_dari_budget_page < 0 ){
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'error',
+                        text : 'budget yang ada input melebihi budget yang tersedia',
+                        showConfirmButton: false,
+                        timer: 1500
+                        });
+                        $('#saldo_page_page').text(data_request_page.toLocaleString('en-us'))
+                        $('#saldo_page_page_hidden').val(data_request_page.toLocaleString('en-us'))
+                        $('#biaya_utuh').val('')
+                    }
+                })
 
             $(document).on("click", ".delete_master_division", function() {
                 var id = $(this).data('id')
