@@ -31,7 +31,13 @@ class RequestController extends Controller
     }
 
     public function checkSubBreakdown($id){
-        return DB::table('sub_breakdown')->where('id', '=', $id)->get();
+        $checkSub = DB::table('sub_breakdown')->where('id', '=', $id)->get();
+        if(empty($checkSub)){
+            $checkBreakDownBudget = DB::select('select * from breakdown_budget bb where 1=1 and id_breakdown = "'.$id.'"');
+            return $checkBreakDownBudget;
+        }else{
+            return $checkSub;
+        }
     }
 
     public function request_budget(Request $request){

@@ -40,20 +40,21 @@
                     @else
                     <div class="card-header">
                         <h5>Formulir Usulan Promosi 2
-                        @php
-                            $get_saldo = DB::select("SELECT bb.amount from master_user mu join master_sub_divisi msd on mu.id_sub_divisi = msd.id_sub_divisi 
-                            left join breakdown_budget bb on msd.id_sub_divisi = bb.id_sub_divisi 
-                            where mu.id = '".Auth::user()->id."'");
+                            @php
+                                $get_saldo = DB::select("SELECT bb.amount from master_user mu join master_sub_divisi msd on mu.id_sub_divisi = msd.id_sub_divisi 
+                                left join breakdown_budget bb on msd.id_sub_divisi = bb.id_sub_divisi 
+                                where mu.id = '".Auth::user()->id."'");
 
-                            $jabatan_m = DB::select("SELECT * from master_jabatan mj where id_jabatan = '".Auth::user()->id_jabatan."'");
-                            // $jabatan_name = DB::select()
-                        @endphp
-                        @if ($get_saldo[0]->amount == 0)
-                            <h1>Saldo 0</h1>
-                        @else
-                            <h1>Saldo <span id="saldo_page_page">{{ number_format($get_saldo[0]->amount) }}</span></h1>
-                        @endif
-                        <input type="hidden" id="saldo_page_page_hidden" value="{{ ($get_saldo[0]->amount) }}"></h5>
+                                $jabatan_m = DB::select("SELECT * from master_jabatan mj where id_jabatan = '".Auth::user()->id_jabatan."'");
+                                // $jabatan_name = DB::select()
+                            @endphp
+                            @if ($get_saldo[0]->amount == 0)
+                                <h1>Saldo 0</h1>
+                            @else
+                                <h1>Saldo <span id="saldo_page_page">{{ number_format($get_saldo[0]->amount) }}</span></h1>
+                            @endif
+                            <input type="hidden" id="saldo_page_page_hidden" value="{{ ($get_saldo[0]->amount) }}">
+                        </h5>
                     </div>
                     @endif
                     <div class="card-body">
