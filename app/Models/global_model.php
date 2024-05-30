@@ -1260,16 +1260,46 @@ class global_model extends Model
 				and mb.id_divisi = '$id_divisi'
 			");
 		}else{
-			$query = DB::select("select 
+			// $query = DB::select("select 
+			// 		mb.id_divisi
+			// 		, mb.amount ms_budget
+			// 		, (case when bb.amount is null then 0 else bb.amount end) ms_breakdown
+			// 		, (case when sb.amount is null then 0 else sb.amount end) ms_sub_breakdown
+			// 		, mb.amount + (case when bb.amount is null then 0 else bb.amount end) + 
+			// 			(case when sb.amount is null then 0 else sb.amount end) total
+			// 		, (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) request
+			// 		, mb.amount + (case when bb.amount is null then 0 else bb.amount end) + 
+			// 			(case when sb.amount is null then 0 else sb.amount end) - (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) sisa
+			// 		, case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end
+			// 			/ (mb.amount + case when bb.amount is null then 0 else bb.amount end + 
+			// 			case when sb.amount is null then 0 else sb.amount end) * 100 as persen
+			// 		, mb.status 
+			// 		, mb.periode_from
+			// 		, mb.periode_end
+			// 		, drb.ms_period_from
+			// 		, drb.ms_period_end
+			// 		, (case when mb.periode_end >= CURDATE() then 'Active' else 'Expired' end) exp_status
+			// 	from master_budget mb 
+			// 	left join (select id_divisi, sum(amount) amount from breakdown_budget group by id_divisi) bb on mb.id_divisi = bb.id_divisi 
+			// 	left join (select id_divisi, sum(amount) amount from sub_breakdown group by id_divisi) sb on mb.id_divisi = sb.id_divisi
+			// 	left join (select drb2.ms_period_end, drb2.ms_period_from, drb2.id_divisi, sum(drb2.nilai_pembiayaan) nilai_pembiayaan from data_request_budget drb2 where 1=1 and drb2.status = '2' and drb2.ms_period_end > CURDATE() group by drb2.id_divisi) drb 
+			// 		on mb.id_divisi = drb.id_divisi
+			// 		and drb.ms_period_from < CURDATE()
+		
+			// ");
+
+			$query = DB::select("SELECT 
 					mb.id_divisi
 					, mb.amount ms_budget
 					, (case when bb.amount is null then 0 else bb.amount end) ms_breakdown
 					, (case when sb.amount is null then 0 else sb.amount end) ms_sub_breakdown
 					, mb.amount + (case when bb.amount is null then 0 else bb.amount end) + 
-						(case when sb.amount is null then 0 else sb.amount end) total
+						(case when sb.amount is null then 0 else sb.amount end) + 
+						(case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) total
 					, (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) request
 					, mb.amount + (case when bb.amount is null then 0 else bb.amount end) + 
-						(case when sb.amount is null then 0 else sb.amount end) - (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) sisa
+						(case when sb.amount is null then 0 else sb.amount end) + 
+						(case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) - (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) sisa
 					, case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end
 						/ (mb.amount + case when bb.amount is null then 0 else bb.amount end + 
 						case when sb.amount is null then 0 else sb.amount end) * 100 as persen
@@ -1282,10 +1312,9 @@ class global_model extends Model
 				from master_budget mb 
 				left join (select id_divisi, sum(amount) amount from breakdown_budget group by id_divisi) bb on mb.id_divisi = bb.id_divisi 
 				left join (select id_divisi, sum(amount) amount from sub_breakdown group by id_divisi) sb on mb.id_divisi = sb.id_divisi
-				left join (select drb2.ms_period_end, drb2.ms_period_from, drb2.id_divisi, sum(drb2.nilai_pembiayaan) nilai_pembiayaan from data_request_budget drb2 where 1=1 and drb2.status = '2' and drb2.ms_period_end > CURDATE() group by drb2.id_divisi) drb 
+				left join (select drb2.ms_period_end, drb2.ms_period_from, drb2.id_divisi, sum(drb2.nilai_pembiayaan) nilai_pembiayaan from data_request_budget drb2 where 1=1 and drb2.status = '2' and drb2.ms_period_end >= CURDATE() group by drb2.id_divisi) drb 
 					on mb.id_divisi = drb.id_divisi
-					and drb.ms_period_from < CURDATE()
-		
+					and drb.ms_period_from <= CURDATE()	
 			");
 		}
 		return $query;

@@ -517,20 +517,19 @@ class Master extends Controller
         $idBreakdown = explode('|^|', $request->breakdownBudget);
         $idSubBreakdown = explode('|^|', $request->idSubBreakdown);
         $sumTransfer = 0;
-
+        
         $idDivisiOrigin     = $idDivisiOri[1];
         $idBudgetOrigin     = $request->idOriginBudget;
         $idSubBreakOrigin   = $idSubBreakdown[0];
         
         $namaDivisiFrm         = $idDivisiOri[3];
         $namaSubDivisiFrm      = $idDivisiOri[4];
-        $namaSubChildDivisiFrm = $idSubBreakdown[2];
-
+        $namaSubChildDivisiFrm = $idSubBreakdown[0] == "" || $idSubBreakdown[0] == null ? "" : $idSubBreakdown[2];
+        
         // $amountBreakdown   = $idSubBreakdown[1];
         $sisaBudget         = $request->sisaBudget;
         $amountTransbudget  = $request->amount_trans;
         $amountTransSub     = $request->amount_trans_sub;
-
 
         // transfer ke
         $idDivisi           = $request->divisi_temp_trans;

@@ -1208,8 +1208,8 @@
                 }
             })
 
-            // var data_temp_request = $('#saldo_page_hidden').val();
             var data_temp_request = 0;
+            var data_temp_request = $('#saldo_page_hidden').val();
             $(document).on('change', '#select_budget2', function(){
                 SlickLoader.enable();
                 $('#id_sb_breakdown2').val(this.value)
@@ -1246,8 +1246,8 @@
                     $('#nilai_biaya').val('')
                     return false
                 }
-                console.log(data_request)
-                return false
+                // console.log(data_request)
+                // return false
                 $('#nilai_biaya').val(autoFormatPhoneNumber(number_typing))
                 var hasil_dari_budget = data_request - number_typing;
                 if(isNaN(hasil_dari_budget)){
