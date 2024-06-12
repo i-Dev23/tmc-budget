@@ -133,7 +133,7 @@ class MainController extends Controller
         $pdf->setOptions(['isPhpEnabled' => true, 'isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
         $pdf->setPaper('A4', 'potrait');
 
-        return $pdf->download($namingSJ . '.pdf');
+        return $pdf->stream($namingSJ . '.pdf');
     }
 
     public function downloadpdfbreakdown(Request $request){

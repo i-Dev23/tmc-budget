@@ -44,7 +44,7 @@
                     @else
                         <div class="card-header">
                             <h5>Formulir Usulan Promosi 2</h5>@php
-                                $get_saldo = DB::select("SELECT bb.amount from master_user mu join master_sub_divisi msd on mu.id_sub_divisi = msd.id_sub_divisi 
+                                $get_saldo = DB::select("SELECT bb.amount, bb.id_budget from master_user mu join master_sub_divisi msd on mu.id_sub_divisi = msd.id_sub_divisi 
                                 left join breakdown_budget bb on msd.id_sub_divisi = bb.id_sub_divisi 
                                 where mu.id = '".Auth::user()->id."'");
     
@@ -66,6 +66,7 @@
                             <div class="row">
                                 <div class="col-md-6 padd-0 mb-3">
                                     <div class="col-md-12 mb-3">
+                                        <input type="hidden" name="id_ms_budget" id="id_ms_budget" value="{{ $get_saldo[0]->id_budget }}">
                                         <input type="hidden" name="id_sb_breakdown2" id="id_sb_breakdown2" value="">
                                         <label for="validationCustom01">Nama Pengusul <span class="required">*</span></label>
                                         <input class="form-control input-air-primary" type="text" placeholder="{{Auth::user()->username}}" name="username" id="username" required="" disabled value="{{Auth::user()->username}}">

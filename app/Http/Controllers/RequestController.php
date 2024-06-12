@@ -41,13 +41,13 @@ class RequestController extends Controller
     }
 
     public function request_budget(Request $request){
-
+        dd('a');
         $dateNow = date('Y-m-d');
-        $cek = DB::select("SELECT * from master_budget mb where periode_from <= '$dateNow' and periode_end >= '$dateNow'");
+        $cek = DB::select("SELECT * from master_budget mb where periode_from <= '$dateNow' and periode_end >= '$dateNow' and id_budget = '".$request->id_ms_budget."'");
         if(count($cek) <= 0){
             return array(
                 'status'    => 500,
-                'message'   => 'Request Budget Kadaluarsa' 
+                'message'   => 'Budget Kadaluarsa, hubungi Admin!' 
             );  
         }
 
@@ -223,11 +223,11 @@ class RequestController extends Controller
 
         //cek periode
         $dateNow = date('Y-m-d');
-        $cek = DB::select("SELECT * from master_budget mb where periode_from <= '$dateNow' and periode_end >= '$dateNow'");
+        $cek = DB::select("SELECT * from master_budget mb where periode_from <= '$dateNow' and periode_end >= '$dateNow' and id_budget = '".$request->id_ms_budget."'");
         if(count($cek) <= 0){
             return array(
                 'status'    => 500,
-                'message'   => 'Request Budget Kadaluarsa' 
+                'message'   => 'Budget Kadaluarsa, hubungi Admin!' 
             );  
         }
 

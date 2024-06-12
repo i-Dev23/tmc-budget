@@ -353,14 +353,15 @@ class global_model extends Model
 			$query = DB::table('master_user')->where('id','=',$params['id'])->update($params['data']);
 		}else if($menu == "divisi_update"){
 			$query = DB::table('master_divisi')->where('id_divisi','=',$params['id'])->update(['status' => $params['parms_int']['status'], 'type' => $params['parms_int']['type_edit']]);
-		}else if($menu == "budget_update" || $menu == "budget_update_divisi"){{
+		}else if($menu == "budget_update" || $menu == "budget_update_divisi"){
 			$query = DB::table('master_budget')->where('id_budget','=',$params['id'])->update($params['data']);
-		}}
+		}
 		return $query;
 	}
 
 	public static function UpdateDataBudget($params){
 		//ceck data
+		// dd($$params);
 		$checkDataBudget = DB::table('breakdown_budget')->where('id_sub_divisi','=',$params['id_sub_divisi'])->get();
 		if(count($checkDataBudget) <= 0){
 			$query = DB::table('breakdown_budget')->insert($params);
@@ -795,7 +796,7 @@ class global_model extends Model
 			// 					and mb.periode_from = drb.ms_period_from
 			// 					and mb.periode_end = drb.ms_period_end
 			// ");
-			$query = DB::select("select 
+			$query = DB::select("SELECT 
 					mb.id_divisi
 					, mb.amount ms_budget
 					, (case when bb.amount is null then 0 else bb.amount end) ms_breakdown
@@ -823,29 +824,60 @@ class global_model extends Model
 		}else{
 			$get_id_divisi = DB::table('master_divisi')->where('url', '=', $url)->get();
 			$id = $get_id_divisi[0]->id_divisi;
-			$query = DB::select("SELECT mb.periode_end, mb.id_divisi, mb.amount, bb.amount amount2, drb.nilai_pembiayaan, (mb.amount + case when bb.amount is null then 0 else bb.amount end) + 
-								case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end total,
-								case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end request, 
-								(mb.amount + case when bb.amount is null then 0 else bb.amount end) sisa,
-								(case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end
-								/ (mb.amount + case when bb.amount is null then 0 else bb.amount end)) * 100 as persen
-								from master_budget mb left join 
-								(select id_divisi, case when sum(nilai_pembiayaan) is null then 0 else sum(nilai_pembiayaan) end 
-								nilai_pembiayaan, ms_period_from, ms_period_end from data_request_budget
-								where id_divisi in ('$id') and status = '2' GROUP by id_divisi) drb 
-								on mb.id_divisi = drb.id_divisi 
-								left join 
-								-- (select id_divisi, sum(amount) amount from breakdown_budget
-								-- where id_divisi in ('$id') GROUP by id_divisi) 
-								(select breakdown_budget.id_divisi, sum(amount)+sb.amountnya amount from breakdown_budget 
-								left join (select sum(amount) as amountnya, id_divisi  from sub_breakdown) sb
-								on sb.id_divisi  = breakdown_budget.id_divisi 
-								where breakdown_budget.id_divisi in ('$id') GROUP by id_divisi)
-								as bb on mb.id_divisi = bb.id_divisi 
-								where mb.id_divisi in ('$id') and mb.status = 'Active'
-								-- and mb.periode_end > CURDATE()
-								and mb.periode_from = drb.ms_period_from
-								and mb.periode_end = drb.ms_period_end
+			// $query = DB::select("SELECT mb.periode_end, mb.id_divisi, mb.amount, bb.amount amount2, drb.nilai_pembiayaan, (mb.amount + case when bb.amount is null then 0 else bb.amount end) + 
+			// 					case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end total,
+			// 					case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end request, 
+			// 					(mb.amount + case when bb.amount is null then 0 else bb.amount end) sisa,
+			// 					(case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end
+			// 					/ (mb.amount + case when bb.amount is null then 0 else bb.amount end)) * 100 as persen
+			// 					from master_budget mb left join 
+			// 					(select id_divisi, case when sum(nilai_pembiayaan) is null then 0 else sum(nilai_pembiayaan) end 
+			// 					nilai_pembiayaan, ms_period_from, ms_period_end from data_request_budget
+			// 					where id_divisi in ('$id') and status = '2' GROUP by id_divisi) drb 
+			// 					on mb.id_divisi = drb.id_divisi 
+			// 					left join 
+			// 					-- (select id_divisi, sum(amount) amount from breakdown_budget
+			// 					-- where id_divisi in ('$id') GROUP by id_divisi) 
+			// 					(select breakdown_budget.id_divisi, sum(amount)+sb.amountnya amount from breakdown_budget 
+			// 					left join (select sum(amount) as amountnya, id_divisi  from sub_breakdown) sb
+			// 					on sb.id_divisi  = breakdown_budget.id_divisi 
+			// 					where breakdown_budget.id_divisi in ('$id') GROUP by id_divisi)
+			// 					as bb on mb.id_divisi = bb.id_divisi 
+			// 					where mb.id_divisi in ('$id') and mb.status = 'Active'
+			// 					-- and mb.periode_end > CURDATE()
+			// 					and mb.periode_from = drb.ms_period_from
+			// 					and mb.periode_end = drb.ms_period_end
+			// ");
+
+			$query = DB::select("SELECT 
+					mb.id_divisi
+					, mb.amount ms_budget
+					, (case when bb.amount is null then 0 else bb.amount end) ms_breakdown
+					, (case when sb.amount is null then 0 else sb.amount end) ms_sub_breakdown
+					, mb.amount + (case when bb.amount is null then 0 else bb.amount end) + 
+						(case when sb.amount is null then 0 else sb.amount end) + 
+						(case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) total
+					, (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) request
+					, mb.amount + (case when bb.amount is null then 0 else bb.amount end) + 
+						(case when sb.amount is null then 0 else sb.amount end) + 
+						(case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) - (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) sisa
+					, case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end
+						/ (mb.amount + case when bb.amount is null then 0 else bb.amount end + 
+						case when sb.amount is null then 0 else sb.amount end) * 100 as persen
+					, mb.status 
+					, mb.periode_from
+					, mb.periode_end
+					, drb.ms_period_from
+					, drb.ms_period_end
+					, (case when mb.periode_end >= CURDATE() then 'Active' else 'Expired' end) exp_status
+				from master_budget mb 
+				left join (select id_divisi, sum(amount) amount from breakdown_budget group by id_divisi) bb on mb.id_divisi = bb.id_divisi 
+				left join (select id_divisi, sum(amount) amount from sub_breakdown group by id_divisi) sb on mb.id_divisi = sb.id_divisi
+				left join (select drb2.ms_period_end, drb2.ms_period_from, drb2.id_divisi, sum(drb2.nilai_pembiayaan) nilai_pembiayaan from data_request_budget drb2 where 1=1 and drb2.status = '2' and drb2.ms_period_end >= CURDATE() group by drb2.id_divisi) drb 
+					on mb.id_divisi = drb.id_divisi
+					and drb.ms_period_from <= CURDATE()	
+				where 1=1
+				and mb.id_divisi in ('$id')
 			");
 		}
 		return $query;
@@ -854,7 +886,7 @@ class global_model extends Model
 	public static function getDataRpBudget($url){
 		if(Auth::user()->role == '1'){
 			$id_divisi = Auth::user()->id_divisi;	
-			$query = DB::select("select 
+			$query = DB::select("SELECT 
 					lmb.nama_divisi
 					, lmb.amount total
 					, (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) request
@@ -872,7 +904,7 @@ class global_model extends Model
 		}else{
 			$get_id_divisi = DB::table('master_divisi')->where('url', '=', $url)->get();
 			$id = $get_id_divisi[0]->id_divisi;
-			$query = DB::select("select 
+			$query = DB::select("SELECT 
 					lmb.nama_divisi
 					, lmb.amount total
 					, (case when drb.nilai_pembiayaan is null then 0 else drb.nilai_pembiayaan end) request
@@ -1206,7 +1238,7 @@ class global_model extends Model
 	public static function getDashboardNew(){
 		if(Auth::user()->role == '1'){
 			$id_divisi = Auth::user()->id_divisi;	
-			$query = DB::select("select 
+			$query = DB::select("SELECT 
 					mb.id_divisi
 					, mb.amount ms_budget
 					, (case when bb.amount is null then 0 else bb.amount end) ms_breakdown
@@ -1234,7 +1266,7 @@ class global_model extends Model
 		}else if(Auth::user()->role == '3'){
 			$id_divisi = Auth::user()->id_divisi;
 			$id = Auth::user()->id;
-			$query = DB::select("select 
+			$query = DB::select("SELECT 
 					mb.id_divisi
 					, mb.amount ms_budget
 					, (case when bb.amount is null then 0 else bb.amount end) ms_breakdown
